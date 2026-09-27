@@ -310,7 +310,7 @@ Projeto Bikes/
 
 ### Workspace
 
-<img width="959" height="539" alt="Projeto Bike - Workspace" src="https://github.com/user-attachments/assets/62baa76c-fda9-4e60-95bb-7e5e8b0e039c" />
+<img width="1364" height="765" alt="Projeto Bike - Workspace-editado" src="https://github.com/user-attachments/assets/ce9640f3-fc9b-4c91-aa65-46680351a26d" />
 
 ---
 
