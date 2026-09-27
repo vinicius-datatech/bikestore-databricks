@@ -119,6 +119,8 @@ No MVP foram estruturados notebooks para:
 
 ![Camada Bronze](<img width="959" height="537" alt="Projeto Bike - Camada Bronze" src="https://github.com/user-attachments/assets/e9a4d174-7e4d-428b-b8e4-f8aea1ba9619" />)
 
+![Camada Bronze](<img width="959" height="537" alt="Projeto Bike - Camada Bronze" src="https://github.com/user-attachments/assets/a6834a09-35ff-4c2b-b4de-40a6ba97ef08" />
+)
 ---
 
 ## 🥈 Silver — dados tratados
