@@ -117,7 +117,7 @@ No MVP foram estruturados notebooks para:
 
 ### Evidência no Databricks
 
-![Camada Bronze](docs/images/projeto-bike-camada-bronze.png)
+![Camada Bronze](<img width="959" height="537" alt="Projeto Bike - Camada Bronze" src="https://github.com/user-attachments/assets/e9a4d174-7e4d-428b-b8e4-f8aea1ba9619" />)
 
 ---
 
