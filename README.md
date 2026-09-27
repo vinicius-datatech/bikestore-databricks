@@ -301,11 +301,11 @@ Projeto Bikes/
 │       └── 03.Silver customers Prod
 │
 ├── 03.gold/
-│   └── Prod/
-│       ├── 01.Gold Sales NY Prod
-│       └── 02.Gold orders pending Prod
-│
-└── 05.orders/
+    └── Prod/
+        ├── 01.Gold Sales NY Prod
+        └── 02.Gold orders pending Prod
+
+
 ```
 
 ### Workspace
