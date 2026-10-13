@@ -19,7 +19,17 @@ O projeto foi estruturado seguindo a lógica de um **Lakehouse** e da **Arquitet
 
 A documentação do MVP estabelece como etapas centrais: definição do objetivo, busca e coleta dos dados, modelagem, carga/ETL e análise da qualidade e dos resultados. O documento também solicita que o repositório público contenha o código e evidências visuais das etapas executadas na plataforma de nuvem.
 
-## 🎯 Objetivo
+# 🎯 Objetivo de Negócio 
+
+Desenvolver uma solução de Engenharia de Dados em nuvem capaz de integrar, processar, transformar e disponibilizar informações provenientes da operação de uma rede de lojas de bicicletas, permitindo identificar e analisar o desempenho comercial das unidades por meio do volume de vendas realizadas.
+
+A solução deverá possibilitar a identificação das lojas com maior representatividade nas vendas, fornecendo subsídios para a avaliação do desempenho comercial, a comparação entre unidades e a identificação de oportunidades de melhoria na gestão das operações.
+
+Por meio da implementação de um pipeline estruturado em arquitetura Medalhão (Bronze, Silver e Gold), busca-se transformar dados operacionais brutos em informações organizadas, consistentes e preparadas para consumo analítico, apoiando a tomada de decisões orientadas por dados (Data-Driven Decision Making).
+
+### Pergunta de Negócio Principal
+
+Quais lojas apresentam o maior volume de vendas de bicicletas e como se caracteriza o desempenho comercial de cada unidade, considerando a quantidade de produtos comercializados e os valores das transações realizadas?
 
 Construir um pipeline de dados em nuvem capaz de:
 
@@ -46,6 +56,99 @@ O projeto utiliza um conjunto de dados relacionado a uma operação de **Bike St
 - Stores.
 
 A organização do projeto no Databricks evidencia a separação das etapas de processamento em diretórios específicos para **Bronze**, **Silver** e **Gold**, além de uma área complementar para pedidos.
+
+---
+
+#  🧪🎲 Coleta de Dados (Fonte de Dados)
+
+O conjunto de dados utilizado no projeto foi obtido por meio da plataforma Kaggle, a partir do repositório público Bike Store Sample Database.
+
+**Fonte:** Kaggle — Bike Store Sample Database
+
+**Link:** https://www.kaggle.com/datasets/dillonmyrick/bike-store-sample-database/data
+
+O conjunto de dados disponibiliza arquivos no formato CSV, contendo informações relacionadas à operação comercial de uma rede de lojas de bicicletas.
+
+Os dados contemplam diferentes entidades do negócio, incluindo lojas, clientes, produtos, marcas, categorias, funcionários, estoques, pedidos e itens de pedidos.
+
+A utilização de arquivos CSV possibilitou a ingestão dos dados para o Azure Data Lake Storage Gen2, que foi utilizado como camada centralizada de armazenamento da solução.
+
+Posteriormente, os arquivos foram processados pelo Azure Databricks, utilizando Apache Spark/PySpark e Delta Lake, seguindo as etapas de ingestão, transformação, validação e disponibilização dos dados para consumo analítico.
+
+---
+
+# 📚 Modelagem e Catálogo de Dados
+
+Catálogo de dados — tabelas de origem
+
+Abaixo está a primeira versão do catálogo, considerando as nove entidades do dataset.
+
+| Tabela      | Descrição funcional           | Finalidade                                      |
+|-------------|-------------------------------|-------------------------------------------------|
+| brands      | Cadastro de marcas            | Identificar as marcas comercializadas          |
+| categories  | Cadastro de categorias        | Classificar os produtos                        |
+| customers   | Cadastro de clientes          | Identificar os consumidores                    |
+| order_items | Itens associados aos pedidos  | Quantificar produtos e valores vendidos        |
+| orders      | Cadastro de pedidos           | Registrar as transações comerciais             |
+| products    | Cadastro de produtos          | Identificar bicicletas e demais produtos       |
+| staffs      | Cadastro de funcionários      | Identificar responsáveis pelas operações       |
+| stocks      | Posição de estoque            | Consultar disponibilidade por loja e produto   |
+| stores      | Cadastro das lojas            | Identificar as unidades comerciais             |
+
+
+O projeto adota a lógica da **Arquitetura Medalhão**, na qual cada camada representa um estágio de refinamento dos dados:
+
+- **Bronze:** dados brutos;
+- **Silver:** dados limpos e padronizados;
+- **Gold:** dados modelados e preparados para consumo.
+
+A documentação do MVP também destaca a importância de um catálogo de dados contendo informações sobre tabelas, campos, tipos de dados, domínio dos valores e linhagem.
+
+No ambiente Databricks, a estrutura de tabelas pode ser acompanhada por meio do **Unity Catalog**.
+
+### Unity Catalog
+
+<img width="959" height="539" alt="Unity Catalog - Tabelas" src="https://github.com/user-attachments/assets/336ff206-b9e6-4da2-ab87-97f21bc7496c" />
+
+---
+
+# 🧪 Qualidade de Dados e Validação do Pipeline
+
+A qualidade dos dados foi considerada uma etapa fundamental na implementação da solução, buscando assegurar a integridade do fluxo de processamento entre as diferentes camadas da Arquitetura Medalhão.
+
+Para essa finalidade, foram desenvolvidos dois notebooks específicos de validação:
+
+**1. 00.validate_bronze**
+
+Responsável por atuar como ponto de controle após a ingestão dos dados na camada Bronze. Sua finalidade é verificar a conclusão da etapa de processamento e validar as condições necessárias para permitir a continuidade do pipeline em direção à camada Silver.
+
+**2. 00.validate_silver**
+
+Responsável por atuar como ponto de controle após as transformações realizadas na camada Silver. Sua finalidade é verificar a conclusão dessa etapa e permitir que o processamento avance para a construção das estruturas analíticas da camada Gold.
+
+Os dois notebooks estão integrados à orquestração do Job no Azure Databricks, estabelecendo dependências entre as etapas de processamento.
+
+Dessa forma, o fluxo de execução segue a sequência:
+
+- Ingestão e processamento dos dados na camada Bronze;
+- Execução da validação Bronze;
+- Transformação e padronização na camada Silver;
+- Execução da validação Silver;
+- Construção das estruturas analíticas na camada Gold.
+
+Essa organização contribui para a rastreabilidade das execuções, o controle das dependências e a identificação de eventuais falhas durante o processamento.
+
+Além disso, a implementação está alinhada às principais dimensões de qualidade de dados:
+
+| Dimensão | Objetivo |
+|---|---|
+| Completude | Identificar campos sem preenchimento ou valores ausentes |
+| Consistência | Verificar a coerência dos dados e dos padrões utilizados |
+| Unicidade | Identificar registros duplicados indevidamente |
+| Acurácia | Avaliar a adequação dos valores ao contexto de negócio |
+| Integridade | Verificar a consistência dos relacionamentos entre entidades |
+
+**Resultado esperado:** estabelecer pontos de controle entre as camadas do pipeline, contribuindo para a confiabilidade do processamento e a disponibilização dos dados para consumo analítico.
 
 ---
 
@@ -237,42 +340,6 @@ Gold
 
 ---
 
-# 🧪 Qualidade de Dados
-
-A proposta do MVP determina que a análise seja precedida por uma verificação da qualidade dos dados.
-
-Foram consideradas dimensões como:
-
-| Dimensão | Objetivo |
-|---|---|
-| **Completude** | Verificar valores nulos ou vazios |
-| **Consistência** | Verificar padrões e formatos esperados |
-| **Unicidade** | Identificar duplicidades indevidas |
-| **Acurácia** | Avaliar se os valores fazem sentido no contexto |
-| **Outliers** | Identificar valores extremos que possam distorcer análises |
-
-O projeto possui notebooks específicos de validação para as camadas **Bronze** e **Silver**, evidenciados no fluxo de execução do Job.
-
----
-
-# 📚 Modelagem e Catálogo de Dados
-
-O projeto adota a lógica da **Arquitetura Medalhão**, na qual cada camada representa um estágio de refinamento dos dados:
-
-- **Bronze:** dados brutos;
-- **Silver:** dados limpos e padronizados;
-- **Gold:** dados modelados e preparados para consumo.
-
-A documentação do MVP também destaca a importância de um catálogo de dados contendo informações sobre tabelas, campos, tipos de dados, domínio dos valores e linhagem.
-
-No ambiente Databricks, a estrutura de tabelas pode ser acompanhada por meio do **Unity Catalog**.
-
-### Unity Catalog
-
-<img width="959" height="539" alt="Unity Catalog - Tabelas" src="https://github.com/user-attachments/assets/336ff206-b9e6-4da2-ab87-97f21bc7496c" />
-
----
-
 # 🗂️ Estrutura do projeto no Databricks
 
 A organização observada no Workspace do projeto é:
@@ -409,7 +476,52 @@ Para reproduzir o MVP, recomenda-se possuir:
 
 ---
 
-# 📈 Resultados e entregáveis
+# 📊 Análise da Solução Implementada
+
+A solução desenvolvida teve como propósito estruturar um ambiente de Engenharia de Dados em nuvem capaz de transformar informações operacionais de uma rede de lojas de bicicletas em estruturas organizadas e preparadas para análise.
+
+A implementação da arquitetura Lakehouse, utilizando Azure Data Lake Storage Gen2 e Azure Databricks, permitiu centralizar os arquivos de origem e estabelecer um fluxo estruturado de processamento.
+
+A adoção da Arquitetura Medalhão possibilitou organizar o tratamento dos dados em diferentes níveis de refinamento.
+
+Na camada Bronze, os dados foram ingeridos e organizados em estruturas Delta, preservando sua característica de dados de origem.
+
+Na camada Silver, foram implementados processos de transformação e padronização das entidades Products, Orders e Customers, preparando essas informações para utilização nas etapas analíticas.
+
+Na camada Gold, foram disponibilizadas duas estruturas direcionadas ao consumo: Sales NY e Orders Pending.
+
+A estrutura Sales NY representa a etapa mais diretamente relacionada ao objetivo de negócio, pois disponibiliza informações comerciais associadas às vendas da operação de Nova York.
+
+Já a estrutura Orders Pending amplia a possibilidade de análise operacional, permitindo acompanhar pedidos que ainda não foram concluídos.
+
+### 💬 Discussão da Solução
+
+A implementação demonstra como a Engenharia de Dados pode contribuir para organizar informações provenientes de diferentes entidades de um sistema transacional, transformando-as em estruturas adequadas para análises de negócio.
+
+Um dos principais benefícios da solução é a organização dos dados em camadas, permitindo separar a ingestão, o tratamento e a disponibilização analítica.
+
+Outro aspecto relevante é a utilização do Azure Databricks para processamento distribuído, combinada ao armazenamento Delta Lake e à organização dos dados por meio do Unity Catalog.
+
+A implementação do Job com dependências entre as etapas Bronze, Silver e Gold também representa um avanço importante, pois permite estruturar a execução do pipeline de maneira orquestrada e acompanhar o processamento desde a origem até a disponibilização das estruturas analíticas.
+
+Do ponto de vista do negócio, a estrutura Gold Sales NY oferece uma base para investigar o desempenho comercial da operação de Nova York. Entretanto, para responder integralmente à pergunta sobre quais lojas apresentam o maior volume de vendas, é necessário que a análise contemple todas as unidades comerciais, permitindo uma comparação entre elas.
+
+Portanto, o projeto estabelece uma infraestrutura funcional para o processamento e a disponibilização dos dados, criando condições para a evolução de análises comerciais mais abrangentes.
+
+### 📈 Oportunidades de Evolução
+
+Como possibilidades de evolução da solução, destacam-se:
+
+- Ampliar a estrutura analítica Gold para contemplar todas as lojas;
+- Desenvolver indicadores de quantidade de bicicletas vendidas por unidade;
+- Calcular o faturamento total por loja;
+- Comparar o desempenho comercial entre períodos;
+- Identificar produtos, marcas e categorias com maior volume de vendas;
+- Disponibilizar os indicadores em dashboards no Power BI.
+
+Essas evoluções permitiriam ampliar a utilização dos dados para apoiar decisões estratégicas e operacionais.
+
+### 📈 Resultados e entregáveis
 
 O MVP demonstra, de forma integrada, os principais componentes de um pipeline de Engenharia de Dados em nuvem:
 
@@ -425,6 +537,30 @@ O MVP demonstra, de forma integrada, os principais componentes de um pipeline de
 - disponibilização de dados para consumo analítico.
 
 O resultado é um fluxo de dados estruturado **da origem ao consumo**, permitindo acompanhar a evolução dos dados desde a camada bruta até as estruturas Gold.
+
+---
+
+# 🙂  Autoavaliação
+
+O desenvolvimento deste MVP representou uma experiência importante para consolidar os conhecimentos adquiridos na Pós-Graduação em Ciência de Dados & Analytics da PUC-Rio, especialmente no campo da Engenharia de Dados e da computação em nuvem.
+
+Durante a realização do projeto, tive a oportunidade de trabalhar com tecnologias e conceitos fundamentais para a construção de pipelines modernos de dados, utilizando Microsoft Azure, Azure Data Lake Storage Gen2, Azure Databricks, Apache Spark, PySpark, Delta Lake e Unity Catalog.
+
+Um dos principais aprendizados foi compreender, na prática, como estruturar uma arquitetura Lakehouse utilizando o conceito de Arquitetura Medalhão, organizando os dados em camadas Bronze, Silver e Gold.
+
+Também considero relevante a implementação dos processos de ingestão e transformação, a criação de tabelas Delta, a configuração das estruturas de armazenamento e a organização dos processos de execução por meio de Jobs com dependências entre as etapas.
+
+Outro aprendizado importante foi a compreensão da necessidade de estabelecer mecanismos de validação e controle do pipeline, contribuindo para a rastreabilidade e a confiabilidade do processamento.
+
+Considero que um dos pontos fortes do trabalho foi a construção da infraestrutura de dados em nuvem e a integração dos diferentes componentes da solução, desde o armazenamento no Azure Data Lake até a disponibilização das estruturas analíticas no Databricks.
+
+Como oportunidade de evolução, identifico a necessidade de aprofundar as análises de negócio, ampliar as estruturas Gold para contemplar todas as lojas e desenvolver indicadores que permitam avaliar o desempenho comercial da rede de maneira mais abrangente.
+
+De maneira geral, avalio que o projeto atingiu um resultado significativo dentro da proposta acadêmica, proporcionando uma experiência prática de desenvolvimento de uma solução de Engenharia de Dados em nuvem.
+
+Mais do que implementar ferramentas isoladamente, o trabalho permitiu compreender a importância da integração entre infraestrutura, processamento, modelagem, qualidade e disponibilização dos dados.
+
+**Concluo que o MVP contribuiu significativamente para o desenvolvimento das minhas competências em Engenharia de Dados, fortalecendo minha capacidade de projetar, implementar e documentar soluções orientadas a dados em ambientes de nuvem.**
 
 ---
 
