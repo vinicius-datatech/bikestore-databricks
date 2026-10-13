@@ -31,6 +31,8 @@ Por meio da implementação de um pipeline estruturado em arquitetura Medalhão 
 
 Quais lojas apresentam o maior volume de vendas de bicicletas e como se caracteriza o desempenho comercial de cada unidade, considerando a quantidade de produtos comercializados e os valores das transações realizadas?
 
+## 🧩 Contexto do MVP
+
 Construir um pipeline de dados em nuvem capaz de:
 
 - disponibilizar os dados em um ambiente centralizado;
@@ -40,8 +42,6 @@ Construir um pipeline de dados em nuvem capaz de:
 - disponibilizar dados tratados para consumo analítico;
 - automatizar a execução do fluxo por meio de **Jobs e Pipelines do Databricks**;
 - produzir estruturas Gold direcionadas ao consumo e à análise.
-
-## 🧩 Contexto do MVP
 
 O projeto utiliza um conjunto de dados relacionado a uma operação de **Bike Store**, contendo entidades como:
 
